@@ -4,8 +4,8 @@ Group Members Name:
 2. Fatima Khan   - SP23-BSE-102  -  Manage Booking ( Confirm Booking, Pyment, Generate Reciept)
 4. Alaina Khan   - SP23-BSE-069  -  Manage Booking ( View Available Vehicles, view routes details, Book journey)
 5. Warda Yousaf  - SP23-BSE-042  -  Login
-6. Kashmala Zeb  - SP23-BSE-048  -  Finance (
-7. Tehreem Jilani- SP23-BSE-041  -  Finance (
+6. Kashmala Zeb  - SP23-BSE-048  -  Finance ( Manage fee structure, Generate Fee challan, Collect Payment, User Dashboard)
+7. Tehreem Jilani- SP23-BSE-041  -  Finance ( Track Defaulters, Refund Handling, Security and logs)
 8. Sarina Amjad  - SP22-BSE-095    Register
 
    Brief Info:

@@ -1,0 +1,130 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Frequency Distribution</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        #dataInput { width: 80%; height: 50px; font-size: 16px; padding: 5px; }
+        button { padding: 10px 20px; font-size: 16px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        table { margin: 20px auto; border-collapse: collapse; width: 80%; }
+        th, td { padding: 10px; border: 1px solid black; }
+        th { background-color: #007BFF; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .stats { margin: 20px auto; padding: 10px; background: #e3f2fd; width: 80%; text-align: left; border-radius: 5px; }
+        #chartContainer { width: 80%; margin: 20px auto; }
+    </style>
+</head>
+<body>
+
+    <h2>Interactive Frequency Distribution</h2>
+    <textarea id="dataInput" placeholder="Enter numbers separated by commas"></textarea><br>
+    <button onclick="generateTable()">Generate Table</button>
+
+    <div id="stats" class="stats"></div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Class Interval</th>
+                <th>Frequency</th>
+                <th>Relative Frequency (%)</th>
+                <th>Cumulative Frequency</th>
+            </tr>
+        </thead>
+        <tbody id="freqTable"></tbody>
+        <tfoot>
+            <tr>
+                <td><strong>Totals</strong></td>
+                <td id="totalFreq"></td>
+                <td id="totalRelative"></td>
+                <td id="totalCumulative"></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div id="chartContainer">
+        <canvas id="freqChart"></canvas>
+    </div>
+
+    <script>
+        function generateTable() {
+            let inputData = document.getElementById("dataInput").value.split(",").map(Number);
+            inputData.sort((a, b) => a - b);
+
+            let min = Math.min(...inputData), max = Math.max(...inputData);
+            let range = max - min;
+            let numClasses = Math.ceil(Math.log2(inputData.length) + 1);
+            let classWidth = Math.ceil(range / numClasses);
+
+            let intervals = [], frequency = [], cumulative = 0, totalValues = inputData.length;
+            let totalRelativeFreq = 0;
+
+            for (let i = 0; i < numClasses; i++) {
+                let lower = min + i * classWidth;
+                let upper = lower + classWidth;
+                intervals.push(`${lower} - ${upper}`);
+                let freq = inputData.filter(num => num >= lower && num < upper).length;
+                frequency.push(freq);
+                totalRelativeFreq += (freq / totalValues) * 100;
+            }
+
+            let tableContent = "", totalFreq = 0;
+            for (let i = 0; i < intervals.length; i++) {
+                cumulative += frequency[i];
+                totalFreq += frequency[i];
+                let relativeFreq = ((frequency[i] / totalValues) * 100).toFixed(2);
+                tableContent += `<tr>
+                    <td>${intervals[i]}</td>
+                    <td>${frequency[i]}</td>
+                    <td>${relativeFreq}%</td>
+                    <td>${cumulative}</td>
+                </tr>`;
+            }
+            document.getElementById("freqTable").innerHTML = tableContent;
+            document.getElementById("totalFreq").innerText = totalFreq;
+            document.getElementById("totalRelative").innerText = totalRelativeFreq.toFixed(2) + "%";
+            document.getElementById("totalCumulative").innerText = totalFreq;
+
+            document.getElementById("stats").innerHTML = `
+                <p><strong>Range:</strong> ${range}</p>
+                <p><strong>Number of Classes:</strong> ${numClasses}</p>
+                <p><strong>Class Width:</strong> ${classWidth}</p>
+            `;
+
+            generateChart(intervals, frequency);
+        }
+
+        function generateChart(labels, data) {
+            let ctx = document.getElementById("freqChart").getContext("2d");
+            if (window.freqChartInstance) {
+                window.freqChartInstance.destroy(); // Remove old chart before updating
+            }
+
+            window.freqChartInstance = new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Frequency",
+                        data: data,
+                        backgroundColor: "#007BFF",
+                        borderColor: "#0056b3",
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

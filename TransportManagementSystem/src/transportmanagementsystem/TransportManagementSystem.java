@@ -16,7 +16,7 @@ public class TransportManagementSystem {
 
 
     public static void main(String[] args) {
-      
+        transportmanagementsystem.presentation.GetLocationApp.main(args);
       
     }
 }

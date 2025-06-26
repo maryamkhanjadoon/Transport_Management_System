@@ -1,8 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package transportmanagementsystem.presentation;
+
+import transportmanagementsystem.DASHBOARD.Dashboard;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -47,46 +45,69 @@ public class GetLocationApp {
 
     private Image carImage;
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new GetLocationApp().createAndShowGUI());
+    public GetLocationApp() {
+        createAndShowGUI();
     }
 
-    private void createAndShowGUI() {
+    public void createAndShowGUI() {
         frame = new JFrame("Vehicle Tracker");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(700, 530);
+        frame.setSize(700, 550);
         frame.setLayout(new BorderLayout(10, 10));
 
-        // Button Panel with background
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)) {
-            @Override
+        // Load images
+        mapIcon = new ImageIcon("resources/map_image.png");
+        if (mapIcon.getIconWidth() <= 0 || mapIcon.getIconHeight() <= 0) {
+            JOptionPane.showMessageDialog(frame, "Map image not loaded! Check 'resources/map_image.png'");
+            return;
+        }
+        carImage = new ImageIcon("resources/car_icon.png").getImage();
+
+        // Button Panel
+        JPanel buttonPanel = new JPanel(new BorderLayout()) {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.setColor(new Color(235, 215, 255)); // light purplish
+                g.setColor(new Color(235, 215, 255));
                 g.fillRect(0, 0, getWidth(), getHeight());
             }
         };
-        buttonPanel.setBorder(new EmptyBorder(12, 0, 12, 0));
+        buttonPanel.setBorder(new EmptyBorder(12, 12, 12, 12));
 
+        // ➕ Add Back (X) button on top-left
+        JButton backButton = new JButton("✕");
+        backButton.setPreferredSize(new Dimension(35, 35));
+        backButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        backButton.setBackground(new Color(220, 38, 38)); // red
+        backButton.setForeground(Color.WHITE);
+        backButton.setFocusPainted(false);
+        backButton.setBorderPainted(false);
+        backButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        backButton.setMargin(new Insets(0, 0, 0, 0));
+        backButton.addActionListener(e -> {
+            frame.dispose();
+            new Dashboard().setVisible(true);
+        });
+
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        leftPanel.setOpaque(false);
+        leftPanel.add(backButton);
+        buttonPanel.add(leftPanel, BorderLayout.WEST);
+
+        // ➕ Add Track Button in center
         JButton trackButton = new GradientButton("Track Vehicle Location");
         trackButton.setFont(new Font("Segoe UI", Font.BOLD, 18));
         trackButton.setForeground(Color.WHITE);
         trackButton.setFocusPainted(false);
         trackButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         trackButton.addActionListener(this::startTracking);
-        buttonPanel.add(trackButton);
 
-        mapIcon = new ImageIcon("resources/map_image.png");
-        if (mapIcon.getIconWidth() <= 0 || mapIcon.getIconHeight() <= 0) {
-            JOptionPane.showMessageDialog(frame, "Map image not loaded! Check path.");
-            return;
-        }
+        JPanel centerPanel = new JPanel();
+        centerPanel.setOpaque(false);
+        centerPanel.add(trackButton);
+        buttonPanel.add(centerPanel, BorderLayout.CENTER);
 
-        // Load car icon
-        carImage = new ImageIcon("resources/car_icon.png").getImage();
-
+        // Map Label with Vehicle Marker
         mapLabel = new JLabel(mapIcon) {
-            @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 if (carImage != null) {
@@ -100,7 +121,6 @@ public class GetLocationApp {
         mapLabel.setBorder(new EmptyBorder(MAP_INSET, MAP_INSET, MAP_INSET, MAP_INSET));
 
         JPanel bottomPanel = new JPanel() {
-            @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 g.setColor(new Color(235, 215, 255));
@@ -112,7 +132,6 @@ public class GetLocationApp {
         frame.add(buttonPanel, BorderLayout.NORTH);
         frame.add(mapLabel, BorderLayout.CENTER);
         frame.add(bottomPanel, BorderLayout.SOUTH);
-
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -122,12 +141,11 @@ public class GetLocationApp {
 
         trackingTimer = new Timer(true);
         trackingTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
             public void run() {
                 moveMarkerAlongPath();
                 SwingUtilities.invokeLater(() -> mapLabel.repaint());
             }
-        }, 0, 600); // update speed
+        }, 0, 600);
     }
 
     private void moveMarkerAlongPath() {
@@ -141,7 +159,7 @@ public class GetLocationApp {
         int imgWidth = mapIcon.getIconWidth();
         int imgHeight = mapIcon.getIconHeight();
 
-        markerX = mapValue(lng, minLng, maxLng, 0, imgWidth - 30);  // 30 = icon width
+        markerX = mapValue(lng, minLng, maxLng, 0, imgWidth - 30);
         markerY = mapValue(maxLat - lat, 0, maxLat - minLat, 0, imgHeight - 30);
 
         currentStep++;
@@ -157,7 +175,7 @@ public class GetLocationApp {
         return (int) (minDst + ratio * (maxDst - minDst));
     }
 
-    // Custom button class
+    // Gradient Button Class
     static class GradientButton extends JButton {
         private boolean hovered = false;
 
@@ -170,12 +188,11 @@ public class GetLocationApp {
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             setMargin(new Insets(10, 25, 10, 25));
             addMouseListener(new java.awt.event.MouseAdapter() {
-                @Override public void mouseEntered(java.awt.event.MouseEvent e) { hovered = true; repaint(); }
-                @Override public void mouseExited(java.awt.event.MouseEvent e) { hovered = false; repaint(); }
+                public void mouseEntered(java.awt.event.MouseEvent e) { hovered = true; repaint(); }
+                public void mouseExited(java.awt.event.MouseEvent e) { hovered = false; repaint(); }
             });
         }
 
-        @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2d = (Graphics2D) g.create();
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -196,5 +213,10 @@ public class GetLocationApp {
             g2d.drawString(getText(), x, y);
             g2d.dispose();
         }
+    }
+
+    // Entry for standalone testing
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new GetLocationApp());
     }
 }

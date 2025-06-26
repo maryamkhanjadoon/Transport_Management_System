@@ -262,7 +262,8 @@ public class Dashboard extends JFrame {
 
     private void handleTrackVehicle(ActionEvent e) {
         new transportmanagementsystem.presentation.GetLocationApp();
-    dispose();
+    dispose(); 
+        
     }
 
     private void handleFinance(ActionEvent e) {

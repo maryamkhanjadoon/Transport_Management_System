@@ -261,10 +261,8 @@ public class Dashboard extends JFrame {
 }
 
     private void handleTrackVehicle(ActionEvent e) {
-        JOptionPane.showMessageDialog(this, 
-            "Vehicle Tracking System\nFeature in development", 
-            "Vehicle Tracking", 
-            JOptionPane.INFORMATION_MESSAGE);
+        new transportmanagementsystem.presentation.GetLocationApp();
+    dispose();
     }
 
     private void handleFinance(ActionEvent e) {
